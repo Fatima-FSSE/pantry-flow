@@ -13,7 +13,11 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import { useState } from "react";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { auth } from "../firebase";
+import { useRouter  } from "next/navigation";
+import {  createUserWithEmailAndPassword } from "firebase/auth";
 
 function Copyright(props) {
   return (
@@ -28,11 +32,22 @@ function Copyright(props) {
   );
 }
 
-// TODO remove, this demo shouldn't need to reset the theme.
-
 const defaultTheme = createTheme();
 
 export default function SignUp() {
+  const [email, setEmail, ] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value)
+  }
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value)
+  }
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -40,6 +55,15 @@ export default function SignUp() {
       email: data.get('email'),
       password: data.get('password'),
     });
+    try{
+
+    }catch(error){
+      setError(error)
+    }
+    createUserWithEmailAndPassword(auth, email, password).then(() => {
+      console.log("User sign up Successfully!");
+      router.push('/signin')
+    })
   };
 
   return (
@@ -60,13 +84,13 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
+          {error && <Typography color="error">{error}</Typography>}
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
                   autoComplete="given-name"
                   name="firstName"
-                  required
                   fullWidth
                   id="firstName"
                   label="First Name"
@@ -75,7 +99,6 @@ export default function SignUp() {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  required
                   fullWidth
                   id="lastName"
                   label="Last Name"
@@ -91,6 +114,7 @@ export default function SignUp() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  onChange={handleEmailChange}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -102,6 +126,7 @@ export default function SignUp() {
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  onChange={handlePasswordChange}
                 />
               </Grid>
               <Grid item xs={12}>

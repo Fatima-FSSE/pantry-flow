@@ -12,16 +12,14 @@ import {
   TextField,
 } from "@mui/material";
 import { collection, query, getDocs, setDoc, doc, deleteDoc, getDoc } from "firebase/firestore";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from 'next/navigation';
-import { signOut } from "next-auth/react";
 
 
 export default function Pantry() {
   const [pantry, setPantry] = useState([]);
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState("");
-  const [userId, setUserId] = useState("")
   const searchParams = useSearchParams();
 
   const handleOpen = () => setOpen(true);
@@ -83,9 +81,8 @@ export default function Pantry() {
   };
 
   useEffect(() => {
-    setUserId(searchParams.get("uid"));
-    console.log("Received the user ID in useeffect: " + searchParams.get("uid"));
-    updatePantry();
+    
+      updatePantry();
     
   }, []);
 
@@ -99,19 +96,6 @@ export default function Pantry() {
       alignItems={"center"}
       gap={2}
     >
-    <Box
-      display={"flex"}
-      flexDirection={"column"}
-      justifyContent={"center"}
-      alignItems={"right"}
-      gap={2}
-    ><Button
-              variant="outlined"
-              color="success"
-              onClick={() => signOut({ callbackUrl: '/', redirect:true })}
-            >
-              Sign Out
-            </Button></Box>
       <Modal
         open={open}
         onClose={handleClose}

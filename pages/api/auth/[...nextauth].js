@@ -27,6 +27,7 @@ export default NextAuth({
           } else {
             // Sign in user
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            console.log("In the nextAuth"+ userCredential);
             if (userCredential.user) {
               return userCredential.user;
             }
