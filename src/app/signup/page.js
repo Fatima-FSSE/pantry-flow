@@ -48,22 +48,31 @@ export default function SignUp() {
     setPassword(event.target.value)
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
       email: data.get('email'),
       password: data.get('password'),
     });
-    try{
-
-    }catch(error){
-      setError(error)
+    try {
+     await createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
+          if(userCredential)
+          console.log("User sign up Successfully!" );
+          console.log("User credentials are "+userCredential.providerId);
+          router.push('/signin')
+        });
+    } catch (error) {
+      if (error.code === 'auth/email-already-in-use') {
+        console.log('Error: The email address is already in use by another account.');
+        setError('Error: The email address is already in use by another account.');
+      } else {
+        console.log('Error:', error.message);
+        setError('Error: The email address is already in use by another account.')
+      }
+      return null;
     }
-    createUserWithEmailAndPassword(auth, email, password).then(() => {
-      console.log("User sign up Successfully!");
-      router.push('/signin')
-    })
+
   };
 
   return (

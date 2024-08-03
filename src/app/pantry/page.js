@@ -15,13 +15,21 @@ import { collection, query, getDocs, setDoc, doc, deleteDoc, getDoc } from "fire
 import { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
 
-
 export default function Pantry() {
   const [pantry, setPantry] = useState([]);
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState("");
+  const [search, setSearch] = useState("");
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [searchResults, setSearchResults] = useState([]);
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const handleSearchOpen = (item) => {
+    setSelectedItem(item);
+    setOpen(true);
+  };
+  const handleSearchClose = () => setOpen(false);
 
   const style = {
     position: "absolute",
@@ -77,8 +85,14 @@ export default function Pantry() {
 
   useEffect(() => {
     updatePantry();
-    
   }, []);
+
+  useEffect(() => {
+    const results = pantry.filter((item) =>
+      item.name.toLowerCase().includes(search.toLowerCase())
+    );
+    setSearchResults(results);
+  }, [search, pantry]);
 
   return (
     <Box
@@ -90,19 +104,21 @@ export default function Pantry() {
       alignItems={"center"}
       gap={2}
     >
-    <Box
-      display={"flex"}
-      flexDirection={"column"}
-      justifyContent={"center"}
-      alignItems={"right"}
-      gap={2}
-    ><Button
-              variant="outlined"
-              color="success"
-              onClick={() => signOut({ callbackUrl: '/', redirect:true })}
-            >
-              Sign Out
-            </Button></Box>
+      <Box
+        display={"flex"}
+        flexDirection={"column"}
+        justifyContent={"center"}
+        alignItems={"right"}
+        gap={2}
+      >
+        <Button
+          variant="outlined"
+          color="success"
+          onClick={() => signOut({ callbackUrl: '/', redirect:true })}
+        >
+          Sign Out
+        </Button>
+      </Box>
       <Modal
         open={open}
         onClose={handleClose}
@@ -111,33 +127,41 @@ export default function Pantry() {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Add Item
+            {selectedItem ? `Item: ${selectedItem.name}` : "Add Item"}
           </Typography>
           <Stack width="100%" direction={"row"} spacing={2}>
-            <TextField
-              id="outlined-basic"
-              label="Item"
-              variant="outlined"
-              fullWidth
-              value={itemName}
-              onChange={(e) => setItemName(e.target.value)}
-            />
-            <Button
-              variant="outlined"
-              onClick={() => {
-                addItem(itemName);
-                setItemName("");
-                handleClose();
-              }}
-            >
-              ADD
-            </Button>
+            {selectedItem ? (
+              <Typography variant="body1">
+                Quantity: {selectedItem.quantity}
+              </Typography>
+            ) : (
+              <>
+                <TextField
+                  id="outlined-basic"
+                  label="Item"
+                  variant="outlined"
+                  fullWidth
+                  value={itemName}
+                  onChange={(e) => setItemName(e.target.value)}
+                />
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    addItem(itemName);
+                    setItemName("");
+                    handleClose();
+                  }}
+                >
+                  ADD
+                </Button>
+              </>
+            )}
           </Stack>
         </Box>
       </Modal>
       <Box
         width="800px"
-        height="100px"
+        height="50px"
         bgcolor={"#FAA317"}
         display={"flex"}
         justifyContent={"center"}
@@ -145,31 +169,47 @@ export default function Pantry() {
         border={"1px solid #333"}
         gap={9}
       >
-        <Typography variant={"h2"} color={"white"} textAlign={"center"}>
+        <Typography variant={"h5"} color={"white"} textAlign={"center"}>
           Pantry Items
         </Typography>
         <Button variant="contained" onClick={handleOpen} color="success">
           ADD
         </Button>
       </Box>
+      <Box
+        width="800px"
+        display={"flex"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        gap={2}
+      >
+        <TextField
+          label="Search Item"
+          variant="outlined"
+          fullWidth
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </Box>
       <Box border={"1px solid #333"}>
         <Stack width="800px" height="300px" spacing={2} overflow={"auto"}>
-          {pantry.map(({ name, quantity }) => {
+          {searchResults.map(({ name, quantity }) => {
             return (
               <Box
                 key={name}
                 width="100%"
-                height="150px"
+                height="100px"
                 display={"flex"}
                 justifyContent={"space-between"}
                 alignItems={"center"}
                 bgcolor={"#f0f0f0"}
                 paddingX={5}
+                onClick={() => handleSearchOpen({ name, quantity })}
               >
-                <Typography variant={"h5"} color={"#333"} textAlign={"center"}>
+                <Typography variant={"h7"} color={"#333"} textAlign={"center"}>
                   {name.charAt(0).toUpperCase() + name.slice(1)}
                 </Typography>
-                <Typography variant={"h5"} color={"#333"} textAlign={"center"}>
+                <Typography variant={"h7"} color={"#333"} textAlign={"center"}>
                   Quantity: {quantity}
                 </Typography>
                 <IconButton variant="contained" onClick={() => addItem(name)} color="success">
