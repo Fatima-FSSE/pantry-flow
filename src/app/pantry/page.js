@@ -12,8 +12,7 @@ import {
   TextField,
 } from "@mui/material";
 import { collection, query, getDocs, setDoc, doc, deleteDoc, getDoc } from "firebase/firestore";
-import { useCallback, useEffect, useState } from "react";
-import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
 
 
@@ -21,9 +20,6 @@ export default function Pantry() {
   const [pantry, setPantry] = useState([]);
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState("");
-  const [userId, setUserId] = useState("")
-  const searchParams = useSearchParams();
-
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -43,9 +39,6 @@ export default function Pantry() {
   };
 
   const updatePantry = async () => {
-    
-    const userId = searchParams.get("uid");
-    console.log("Received the user ID: " + userId);
     const snapshot = query(collection(firestore, "pantry"));
     const docs = await getDocs(snapshot);
     const pantryList = [];
@@ -83,8 +76,6 @@ export default function Pantry() {
   };
 
   useEffect(() => {
-    setUserId(searchParams.get("uid"));
-    console.log("Received the user ID in useeffect: " + searchParams.get("uid"));
     updatePantry();
     
   }, []);
