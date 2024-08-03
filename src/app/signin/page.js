@@ -24,6 +24,7 @@ export default function SignInSide() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const router = useRouter();
 
 
   const handleEmailChange = (event) => {
@@ -42,12 +43,23 @@ export default function SignInSide() {
       password: data.get("password"),
     });
     try {
-      signIn("credentials", {
-        redirect: true,
+      const result = await signIn("credentials", {
+        redirect: false,
         email,
         password,
         callbackUrl :'/pantry'
       });
+
+      console.log("The value of result :"+result.status+" "+ result.error+result.url);
+
+      if (result.status === 401) {
+        setError("Unauthorized user");
+      } else {
+        // Redirect on successful sign-in
+        router.push(result.url || '/pantry');
+      }
+
+
     } catch (error) {
       console.log(error);
       setError(error.message);
