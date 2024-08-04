@@ -16,7 +16,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useRouter } from "next/navigation";
 import { auth } from "../firebase";
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import  { signIn }  from "next-auth/react";
 
 const defaultTheme = createTheme();
 
@@ -43,9 +43,9 @@ export default function SignInSide() {
     });
     try {
       const result = await signIn("credentials", {
-        redirect: false,
         email,
         password,
+        redirect: false,
         callbackUrl: "/pantry",
       });
 

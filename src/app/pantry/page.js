@@ -1,8 +1,8 @@
-'use client';
+"use client";
 import { firestore } from "../firebase";
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
-import IconButton from '@mui/material/IconButton';
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import IconButton from "@mui/material/IconButton";
 import {
   Box,
   Stack,
@@ -11,7 +11,15 @@ import {
   Modal,
   TextField,
 } from "@mui/material";
-import { collection, query, getDocs, setDoc, doc, deleteDoc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  getDocs,
+  setDoc,
+  doc,
+  deleteDoc,
+  getDoc,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
 
@@ -25,11 +33,6 @@ export default function Pantry() {
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const handleSearchOpen = (item) => {
-    setSelectedItem(item);
-    setOpen(true);
-  };
-  const handleSearchClose = () => setOpen(false);
 
   const style = {
     position: "absolute",
@@ -114,7 +117,7 @@ export default function Pantry() {
         <Button
           variant="outlined"
           color="success"
-          onClick={() => signOut({ callbackUrl: '/', redirect:true })}
+          onClick={() => signOut({ callbackUrl: "/", redirect: true })}
         >
           Sign Out
         </Button>
@@ -127,35 +130,27 @@ export default function Pantry() {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            {selectedItem ? `Item: ${selectedItem.name}` : "Add Item"}
+            Add Item
           </Typography>
           <Stack width="100%" direction={"row"} spacing={2}>
-            {selectedItem ? (
-              <Typography variant="body1">
-                Quantity: {selectedItem.quantity}
-              </Typography>
-            ) : (
-              <>
-                <TextField
-                  id="outlined-basic"
-                  label="Item"
-                  variant="outlined"
-                  fullWidth
-                  value={itemName}
-                  onChange={(e) => setItemName(e.target.value)}
-                />
-                <Button
-                  variant="outlined"
-                  onClick={() => {
-                    addItem(itemName);
-                    setItemName("");
-                    handleClose();
-                  }}
-                >
-                  ADD
-                </Button>
-              </>
-            )}
+            <TextField
+              id="outlined-basic"
+              label="Item"
+              variant="outlined"
+              fullWidth
+              value={itemName}
+              onChange={(e) => setItemName(e.target.value)}
+            />
+            <Button
+              variant="outlined"
+              onClick={() => {
+                addItem(itemName);
+                setItemName("");
+                handleClose();
+              }}
+            >
+              ADD
+            </Button>
           </Stack>
         </Box>
       </Modal>
@@ -204,7 +199,6 @@ export default function Pantry() {
                 alignItems={"center"}
                 bgcolor={"#f0f0f0"}
                 paddingX={5}
-                onClick={() => handleSearchOpen({ name, quantity })}
               >
                 <Typography variant={"h7"} color={"#333"} textAlign={"center"}>
                   {name.charAt(0).toUpperCase() + name.slice(1)}
@@ -212,10 +206,18 @@ export default function Pantry() {
                 <Typography variant={"h7"} color={"#333"} textAlign={"center"}>
                   Quantity: {quantity}
                 </Typography>
-                <IconButton variant="contained" onClick={() => addItem(name)} color="success">
+                <IconButton
+                  variant="contained"
+                  onClick={() => addItem(name)}
+                  color="success"
+                >
                   <AddIcon />
                 </IconButton>
-                <IconButton variant="contained" onClick={() => removeItem(name)} color="success">
+                <IconButton
+                  variant="contained"
+                  onClick={() => removeItem(name)}
+                  color="success"
+                >
                   <RemoveIcon />
                 </IconButton>
               </Box>
